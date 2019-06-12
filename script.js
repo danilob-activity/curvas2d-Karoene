@@ -74,14 +74,13 @@ function showPoints() {
 
 }
 
-
 function setHermite(p0, p1, p0l, p1l) {
     points_curveH = []
     ctx.beginPath();
     M = transformCanvas(canvas.width, canvas.height);
     ctx.font = "14px Arial";
-    pos0 = multVec(mult(M, translate(p0[0], p0[1])), [0, 0, 1]);
-    pos1 = multVec(mult(M, translate(p1[0], p1[1])), [0, 0, 1]);
+    pos0 = multVec(mult(M, translate(p0[0], p0[1])), [0, 0, 1]);   //ponto extremidade
+    pos1 = multVec(mult(M, translate(p1[0], p1[1])), [0, 0, 1]);   //ponto extremidade
     pos0l = multVec(mult(M, translate(p0[0] + p0l[0] / 10., p0[1] + p0l[1] / 10.)), [0, 0, 1]);
     pos1l = multVec(mult(M, translate(p1[0] + p1l[0] / 10., p1[1] + p1l[1] / 10.)), [0, 0, 1]);
     calculatePointsCurveHermite(p0, p1, p0l, p1l);
@@ -114,27 +113,88 @@ function drawCurveHermite() {
 }
 
 function calculatePointsCurveHermite(p0, p1, p0l, p1l) {
-    q = [
+    q = [    //matriz de Q
         [p0[0], p0[1]],
         [p1[0], p1[1]],
         [p0l[0], p0l[1]],
         [p1l[0], p1l[1]]
     ];
-    for (var i = 0; i <= np; i++) {
-        u = (1. * (i)) / np;
-        p = mult(getMatrixBuhermite(u), q);
+    for (var i = 0; i <= np; i++) {    //
+        var u = (1. * (i)) / np;
+        var p = mult(getMatrixBuhermite(u), q);  // mult H*q
         points_curveH.push([p[0], p[1]]);
     }
 }
 
 function getMatrixBuhermite(u) {
     return [
-        [2 * u * u * u - 3 * u * u + 1, -2 * u * u * u + 3 * u * u, u * u * u - 2 * u * u + u, u * u * u - u * u]
+        [2 * u * u * u - 3 * u * u + 1, -2 * u * u * u + 3 * u * u, 
+            u * u * u - 2 * u * u + u, u * u * u - u * u]
     ];
 }
 
+function setBezier(p0, p1, p2, p3) {
+    points_curveH = []
+    ctx.beginPath();
+    M = transformCanvas(canvas.width, canvas.height);
+    ctx.font = "14px Arial";
+    pos0 = multVec(mult(M, translate(p0[0], p0[1])), [0, 0, 1]);   //ponto extremidade
+    pos1 = multVec(mult(M, translate(p1[0], p1[1])), [0, 0, 1]);   //ponto extremidade
+    pos2
+    pos3
+    //pos0l = multVec(mult(M, translate(p0[0] + p0l[0] / 10., p0[1] + p0l[1] / 10.)), [0, 0, 1]);
+    //pos1l = multVec(mult(M, translate(p1[0] + p1l[0] / 10., p1[1] + p1l[1] / 10.)), [0, 0, 1]);
+    calculatePointsCurveBezier(p0, p1, p2, p3);
+    ctx.lineWidth = 1.5;
+    drawCurveHermite();
+    ctx.fillStyle = "#ff836444";
+    ctx.strokeStyle = "#ff836444";
+    //drawArrow(ctx, pos0[0], pos0[1], pos0l[0], pos0l[1]);
+    //drawArrow(ctx, pos1[0], pos1[1], pos1l[0], pos1l[1]);
+    ctx.fillStyle = "#494949";
+    ctx.fillText("p0", pos0[0] + 7, pos0[1] - 7);
+    ctx.fillText("p1", pos1[0] + 7, pos1[1] - 7);
+    ctx.fillText("p2", )
+    ctx.fillText("p3", )
+    drawCircle(mult(M, translate(p0[0], p0[1])), ctx, "#8b104e");
+    drawCircle(mult(M, translate(p1[0], p1[1])), ctx, "#8b104e");
+    drawCircle( p2)
+    drawCircle( p3)
 
+}
 
+function drawCurveBezier() {
+    ctx.fillStyle = "#6bd5e1";
+    ctx.strokeStyle = "#6bd5e1";
+
+    for (var i = 0; i < points_curveH.length - 1; i++) {
+        ctx.beginPath();
+        pa = multVec(mult(M, translate(points_curveH[i][0][0], points_curveH[i][0][1])), [0, 0, 1]);
+        pb = multVec(mult(M, translate(points_curveH[i + 1][0][0], points_curveH[i + 1][0][1])), [0, 0, 1]);
+        ctx.moveTo(pa[0], pa[1]);
+        ctx.lineTo(pb[0], pb[1]);
+        ctx.stroke();
+    }
+}
+
+function calculatePointsCurveBezier(p0, p1, p0l, p1l) {
+    q = [    //matriz de Q
+        [p0[0], p0[1]],
+        [p1[0], p1[1]],
+        [p0l[0], p0l[1]],
+        [p1l[0], p1l[1]]
+    ];
+    for (var i = 0; i <= np; i++) {    //
+        var u = (1. * (i)) / np;
+        var p = mult(getMatrixBuhermite(u), q);  // mult H*q
+        points_curveH.push([p[0], p[1]]);
+    }
+}
+function getMatrixBubezier(u) {   // bezier
+    return [    // matrix p(u)
+        [1 - 3*u + 3*u*u - u*u*u, 3*u - 6*u*u + 3*u*u*u, 3*u*u - 3*u*u*u, u*u*u]
+    ];
+}
 
 save.addEventListener("click", function() {
 
@@ -146,3 +206,4 @@ save.addEventListener("click", function() {
 
 textarea.addEventListener("input", drawCanvas);
 window.addEventListener("load", drawCanvas);
+
