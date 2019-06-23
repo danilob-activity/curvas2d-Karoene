@@ -15,33 +15,65 @@ var fps = 60;
 
 var frame_current = 0;  //hermite
 var total_time = 1;
-var count = 0.0;
-count = parseFloat(prompt("digite o valor do contador para frame_current|Hermite:"));
-console.log(count)
+var count = 1;
+var t1 = parseFloat(prompt("digite a velocidade para Hermite:"));
+//console.log(t1);
 
 var frame_current1 = 0;  //bezier val
 var total_time1 = 1;
-var count1 = 0.0;
-count1 = parseFloat(prompt("digite o valor do contador para frame_current|Bezier:"));
-console.log(count1)
+var count1 = 1;
+var t2 = parseFloat(prompt("digite a velocidade para Bezier:"));
+//console.log(t2);
 
-if(!(count1))
-    count1 = 1;
-if(!(count))    
-    count = 1;
-    
+var ease = parseInt(prompt("Aumento da velocidade? 1-sim"));
+
+if(!(t1))    
+    t1 = 1.0;
+if(!(t2))    
+    t2 = 1.0;
+
+var valT1 = t1
+var valT2 = t2
+function decremento(t1){
+    t1 -= 0.01
+    //console.log(t1)
+    if (t1 <= 0.1){ 
+        t1 = valT1
+        //console.log("recebeu")
+        return t1
+        }
+    return t1
+}
+function decremento1(t2){
+    t2 -= 0.01
+    //console.log(t1)
+    if (t2 <= 0.1){ 
+        t2 = valT2
+        //console.log("recebeu")
+        return t2
+        }
+    return t2
+}    
+
 function drawCanvas() {
     
 
     setTimeout(function() {
-        requestAnimationFrame(drawCanvas);
+              
         
+        requestAnimationFrame(drawCanvas);
+       
         frame_current += count;
-        frame_current = frame_current % (total_time * fps);      
+        frame_current = frame_current % (t1 * fps);      
        
         frame_current1 += count1;   
-        frame_current1 = frame_current1 % (total_time1* fps);
-
+        frame_current1 = frame_current1 % (t2* fps);
+        
+        if (ease == 1){
+            t1 = decremento(t1)
+            t2 = decremento1(t2)
+        }
+     
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         eval(textarea.value);
@@ -53,8 +85,10 @@ function drawCanvas() {
 
 
     }, 1000 / fps );
-    //(1000 / fps)
+    
 }
+
+
 
 function drawCircle(M, canv, color) { //desenha um círculo
     canv.beginPath();
@@ -135,11 +169,8 @@ function setHermite(p0, p1, p0l, p1l) {
     drawCircle(mult(M, translate(p0[0], p0[1])), ctx, "#8b104e");
     drawCircle(mult(M, translate(p1[0], p1[1])), ctx, "#8b104e");
 
-    //var pcurent = calculatePointCurveHermite(p0, p1, p0l, p1l, 0.5);
-    
-    
-    pcurent = calculatePointCurveHermite(p0, p1, p0l, p1l, frame_current / (total_time * fps));
-    drawCircle(mult(M, translate(pcurent[0][0], pcurent[0][1])), ctx, "#808080");
+    pcurent = calculatePointCurveHermite(p0, p1, p0l, p1l, frame_current / (t1 * fps));
+    drawCircle(mult(M, translate(pcurent[0][0], pcurent[0][1])), ctx, "#FFFF00");
     //drawCircle(mult(M, translate(p_current[0][0], p_current[0][1])), ctx, "#52437b");
 
 
@@ -170,9 +201,9 @@ function setBezier(p0, p1, p2, p3) {
     drawCircle(mult(M, translate(p3[0], p3[1])), ctx, "#8b104e");
 
     
-    pcurent = calculatePointCurveBezier(p0, p1, p2, p3, frame_current1 / (total_time1 * fps));
-    
-    drawCircle(mult(M, translate(pcurent[0][0], pcurent[0][1])), ctx, "#52437b");
+    pcurent = calculatePointCurveBezier(p0, p1, p2, p3, frame_current1 / (t2 * fps));
+    //52437b
+    drawCircle(mult(M, translate(pcurent[0][0], pcurent[0][1])), ctx, "#00FF00");
 
     //var arc = createArc(p0, p1, p2, p3);
     //var total_length = arc[0].length;
